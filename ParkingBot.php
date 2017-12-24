@@ -13,28 +13,26 @@ class ParkingBot
 	private $car_list_history;
 	private $car_list;
 	
-	function __construct($ticket_price)
-	{
+	function __construct($ticket_price) {
 		$this->ticket_price = $ticket_price;
 		$this->car_list_history = array();
 		$this->car_list = array();
 	}
 
-	public function checkIn($registration_number) {
+	public function checkIn($registration_number, $start_time = false) {
 		$new_car = array(
-			'start_time' => time(),
+			'start_time' => $start_time ?: time(),
 			'end_time' => false
 		);
 
 		$this->car_list[$registration_number] = $new_car;
 	}
 
-	public function checkOut($registration_number) {
+	public function checkOut($registration_number, $end_time = false) {
 		$car = $this->car_list[$registration_number];
 		
 		$car['registration_number'] = $registration_number;
-		//$car['end_time'] = time();
-		$car['end_time'] = strtotime('+1 day', time());
+		$car['end_time'] = $end_time ?: time();
 		$car['fee'] = $this->calculateFee($car);
 
 		$this->car_list_history[] = $car;
@@ -45,13 +43,37 @@ class ParkingBot
 	}
 
 	public function getCars($from_time = false, $to_time = false) {
-		$cars = array(
-			'old_cars' => $this->car_list_history
-		);
+		$cars = array();
+		$old_cars = array();
+
+		// Filter car list
+		if ($from_time && $to_time) {
+			$from_timestamp = strtotime($from_time);
+			$to_timestamp = strtotime($to_time);
+
+			foreach ($this->car_list_history as $car) {
+				if ($car['start_time'] >= $from_timestamp && $car['end_time'] <= $to_timestamp)
+				{
+					$old_cars[] = $car;
+				}
+			}
+		} else if ($from_time) {
+			$from_timestamp = strtotime($from_time);
+
+			foreach ($this->car_list_history as $car) {
+				if ($car['start_time'] >= $from_timestamp)
+				{
+					$old_cars[] = $car;
+				}
+			}
+		} else {
+			$old_cars = $this->car_list_history;
+		}
+
+		$cars['old_cars'] = $old_cars;
 
 		// If $to_time is passed, active cars would not be relevant (assuming $to_time is not >= now)
-		if (!$to_time)
-		{
+		if (!$to_time) {
 			$cars['active_cars'] = $this->car_list;
 		}
 
@@ -64,7 +86,7 @@ class ParkingBot
 
 		$diff = ($end_time - $start_time) / 60 / 60;
 
-		$hours = round($diff, 0, PHP_ROUND_HALF_UP);
+		$hours = ceil($diff);
 
 		$total_fee = $this->ticket_price * $hours;
 
