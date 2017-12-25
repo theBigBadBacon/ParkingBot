@@ -1,0 +1,45 @@
+:root {
+	--background-primary-color: #91AB97;
+}
+body {
+	background-color: #444354;
+	font-family: verdana;
+	font-size: 16px;
+	text-align: center;
+}
+.main {
+	background: #85899A;
+	background-image: linear-gradient(to right, #D1D1D1 0%, #B6B5E8 100%);
+	display: inline-block;
+	padding: 20px;
+	text-align: left;
+	border: 2px solid #847d7d;
+	border-bottom-color: #504e4e;
+	border-radius: 4px;
+	box-shadow:
+		inset 0 0 5px 1px rgba(0,0,0,0.3),
+		0 3px 5px 0px rgba(0,0,0,0.3);
+}
+.heading {
+	text-align: center;
+}
+.form {
+	display: inline-block;
+}
+.list {
+	border: 1px solid #7b7b7b;
+	border-collapse: collapse;
+}
+.list-row:nth-child(odd) {
+	background: rgba(255,255,255,0.3);
+}
+.list-row:first-child {
+	box-shadow: inset 0 -1px 0px #7b7b7b;
+}
+.list-row:last-child {
+	background: rgba(0,0,0,0.1);
+	box-shadow: inset 0 1px 0px #7b7b7b;
+}
+.list-row-item {
+	padding: 8px 16px;
+}
